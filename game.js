@@ -33,30 +33,29 @@ const config = {
 const game = new Phaser.Game(config);
 
 function preload() {
-    // Load images for bunny, carrots, poop emojis, and background
     this.load.image('bunny', 'assets/rabbit.png');
     this.load.image('carrot', 'assets/carrot.png');
     this.load.image('poop', 'assets/poop.png');
-    this.load.image('background', 'assets/matrix_background.jpg'); // Ensure .jpg extension
+    this.load.image('background', 'assets/matrix_background.jpg');
 }
 
 function create() {
-    // Add the background
+    // Add background
     background = this.add.tileSprite(400, 300, 800, 600, 'background');
 
-    // Create maze walls using Graphics instead of rectangles
+    // Create maze walls using staticGroup
     walls = this.physics.add.staticGroup();
     createMaze(this);
 
-    // Create the player (bunny)
+    // Create player (bunny)
     player = this.physics.add.sprite(50, 50, 'bunny').setScale(0.2);
     player.setCollideWorldBounds(true);
 
     // Create group of carrots (dots)
     carrots = this.physics.add.group({
         key: 'carrot',
-        repeat: totalDots - 1,  // Total dots to collect
-        setXY: { x: Phaser.Math.Between(100, 700), y: Phaser.Math.Between(100, 500), stepX: 70, stepY: 50 },
+        repeat: totalDots - 1,
+        setXY: { x: 100, y: 100, stepX: 70, stepY: 50 },
         setScale: { x: 0.05, y: 0.05 }
     });
 
@@ -73,6 +72,9 @@ function create() {
 
     // Add collision between player and poop emojis (game over)
     this.physics.add.collider(player, poopEmojis, hitPoop, null, this);
+
+    // Add collision between player and walls
+    this.physics.add.collider(player, walls);
 
     // Input keys
     cursors = this.input.keyboard.createCursorKeys();
@@ -107,55 +109,38 @@ function update() {
     });
 }
 
-// Create a basic maze layout using Graphics object
+// Create a basic maze layout using static bodies
 function createMaze(scene) {
-    let graphics = scene.add.graphics({ fillStyle: { color: 0x00ff00 } });
-
-    // Create vertical and horizontal walls using Graphics
-    graphics.fillRect(375, 0, 50, 600);  // Vertical wall in the center
-    graphics.fillRect(0, 0, 800, 50);    // Horizontal wall at the top
-    graphics.fillRect(0, 550, 800, 50);  // Horizontal wall at the bottom
-
-    // Add physics to the graphics (this adds physics bodies to the walls)
-    let verticalWall = scene.physics.add.existing(graphics.fillRect(375, 0, 50, 600), true);
-    let topWall = scene.physics.add.existing(graphics.fillRect(0, 0, 800, 50), true);
-    let bottomWall = scene.physics.add.existing(graphics.fillRect(0, 550, 800, 50), true);
-
-    // Add walls to static group
-    walls.add(verticalWall);
-    walls.add(topWall);
-    walls.add(bottomWall);
+    // Create vertical and horizontal walls
+    walls.create(400, 0, 'bunny').setDisplaySize(50, 600).refreshBody();  // Vertical wall
+    walls.create(400, 600, 'bunny').setDisplaySize(50, 600).refreshBody(); // Vertical wall
+    walls.create(0, 25, 'bunny').setDisplaySize(800, 50).refreshBody();    // Horizontal top
+    walls.create(0, 575, 'bunny').setDisplaySize(800, 50).refreshBody();   // Horizontal bottom
 }
 
 // Collecting carrots (dots)
 function collectCarrot(player, carrot) {
-    carrot.disableBody(true, true); // Remove the carrot (dot)
-    dotsCollected++;  // Increase dots collected count
+    carrot.disableBody(true, true);
+    dotsCollected++;
     scoreText.setText('Dots Collected: ' + dotsCollected + '/' + totalDots);
 
-    // Check if all dots are collected
     if (dotsCollected === totalDots) {
         victory = true;
-        this.physics.pause(); // Stop the game
-        this.add.text(400, 300, 'TEST TEST TEST', { fontSize: '48px', fill: '#FFF' }).setOrigin(0.5).setDepth(1);
-
-        // Add button to move to the next map
-        let nextMapButton = this.add.text(400, 400, 'Move to Next Map', { fontSize: '32px', fill: '#FFF', backgroundColor: '#000' }).setOrigin(0.5).setDepth(1);
+        this.physics.pause();
+        this.add.text(400, 300, 'Victory!', { fontSize: '48px', fill: '#FFF' }).setOrigin(0.5);
+        let nextMapButton = this.add.text(400, 400, 'Next Level', { fontSize: '32px', fill: '#FFF' }).setOrigin(0.5);
         nextMapButton.setInteractive();
-        nextMapButton.on('pointerdown', () => {
-            nextMap();
-        });
+        nextMapButton.on('pointerdown', () => nextMap());
     }
 }
 
 // Hitting poop emoji (ghost)
 function hitPoop(player, poop) {
-    this.physics.pause(); // Stop the game
-    player.setTint(0xff0000); // Bunny turns red
+    this.physics.pause();
+    player.setTint(0xff0000);
     gameOver = true;
 
-    // Add Restart button
-    let restartButton = this.add.text(400, 300, 'Restart', { fontSize: '32px', fill: '#FFF', backgroundColor: '#000' }).setOrigin(0.5).setDepth(1);
+    let restartButton = this.add.text(400, 300, 'Restart', { fontSize: '32px', fill: '#FFF' }).setOrigin(0.5);
     restartButton.setInteractive();
     restartButton.on('pointerdown', () => {
         this.scene.restart();
@@ -168,6 +153,6 @@ function hitPoop(player, poop) {
 function nextMap() {
     currentLevel++;
     dotsCollected = 0;
-    this.scene.restart();  // Restart with a new map
+    this.scene.restart();
     scoreText.setText('Dots Collected: 0/' + totalDots);
 }
