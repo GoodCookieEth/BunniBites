@@ -33,11 +33,11 @@ const config = {
 const game = new Phaser.Game(config);
 
 function preload() {
-    // Load images for bunny, carrots, poop emojis, and background
+    // Load images for bunny, carrots, poop emojis, and background (now using .jpg)
     this.load.image('bunny', 'assets/rabbit.png');
     this.load.image('carrot', 'assets/carrot.png');
     this.load.image('poop', 'assets/poop.png');
-    this.load.image('background', 'assets/matrix_background.png'); // Background from Bunni Blitz
+    this.load.image('background', 'assets/matrix_background.jpg'); // Updated to .jpg
 }
 
 function create() {
@@ -115,16 +115,18 @@ function update() {
 
 // Create a basic maze layout using colored rectangles as walls
 function createMaze(walls) {
-    // Create vertical wall in the center using a colored rectangle
-    let verticalWall = this.add.rectangle(400, 300, 50, 600, 0x00ff00); // Green wall
-    this.physics.add.existing(verticalWall, true); // Add physics
-    walls.add(verticalWall);
+    // Create vertical and horizontal walls using Phaser's built-in graphics
+    let verticalWall = this.add.rectangle(400, 300, 50, 600, 0x00ff00); // Green vertical wall
+    let topWall = this.add.rectangle(400, 50, 800, 50, 0x00ff00); // Green horizontal wall at the top
+    let bottomWall = this.add.rectangle(400, 550, 800, 50, 0x00ff00); // Green horizontal wall at the bottom
 
-    // Create horizontal walls at the top and bottom
-    let topWall = this.add.rectangle(200, 150, 600, 50, 0x00ff00); // Green top wall
-    let bottomWall = this.add.rectangle(600, 450, 600, 50, 0x00ff00); // Green bottom wall
+    // Add physics to these walls
+    this.physics.add.existing(verticalWall, true);
     this.physics.add.existing(topWall, true);
     this.physics.add.existing(bottomWall, true);
+
+    // Add the walls to the walls group
+    walls.add(verticalWall);
     walls.add(topWall);
     walls.add(bottomWall);
 }
