@@ -45,7 +45,6 @@ function create() {
     background = this.add.tileSprite(400, 300, 800, 600, 'background');
 
     // Create maze walls using Graphics
-    walls = this.physics.add.staticGroup();
     createMaze(this);
 
     // Create the player (bunny)
@@ -73,12 +72,6 @@ function create() {
 
     // Add collision between player and poop emojis (game over)
     this.physics.add.collider(player, poopEmojis, hitPoop, null, this);
-
-    // Add collision between player and walls
-    this.physics.add.collider(player, walls);
-
-    // Add collision between poop emojis and walls
-    this.physics.add.collider(poopEmojis, walls);
 
     // Input keys
     cursors = this.input.keyboard.createCursorKeys();
@@ -113,27 +106,17 @@ function update() {
     });
 }
 
-// Create a basic maze layout using Graphics instead of rectangles
+// Create a basic maze layout using Graphics object
 function createMaze(scene) {
     let graphics = scene.add.graphics({ fillStyle: { color: 0x00ff00 } });
 
-    // Vertical wall in the center
-    let verticalWall = scene.add.rectangle(400, 300, 50, 600);
-    scene.physics.add.existing(verticalWall, true);
-    graphics.fillRectShape(verticalWall);
+    // Create vertical and horizontal walls using graphics instead of rectangles
+    graphics.fillRect(375, 0, 50, 600);  // Vertical wall in the center
+    graphics.fillRect(0, 0, 800, 50);    // Horizontal wall at the top
+    graphics.fillRect(0, 550, 800, 50);  // Horizontal wall at the bottom
 
-    // Horizontal walls at top and bottom
-    let topWall = scene.add.rectangle(400, 50, 800, 50);
-    let bottomWall = scene.add.rectangle(400, 550, 800, 50);
-    scene.physics.add.existing(topWall, true);
-    scene.physics.add.existing(bottomWall, true);
-    graphics.fillRectShape(topWall);
-    graphics.fillRectShape(bottomWall);
-
-    // Add the walls to the static group
-    walls.add(verticalWall);
-    walls.add(topWall);
-    walls.add(bottomWall);
+    // Add physics bodies for the walls
+    scene.physics.add.existing(graphics, true);
 }
 
 // Collecting carrots (dots)
