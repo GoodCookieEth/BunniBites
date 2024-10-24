@@ -33,7 +33,7 @@ const config = {
 const game = new Phaser.Game(config);
 
 function preload() {
-    // Load images for bunny, carrots, poop emojis, and background (now using .jpg)
+    // Load images for bunny, carrots, poop emojis, and background
     this.load.image('bunny', 'assets/rabbit.png');
     this.load.image('carrot', 'assets/carrot.png');
     this.load.image('poop', 'assets/poop.png');
@@ -44,9 +44,9 @@ function create() {
     // Add the background
     background = this.add.tileSprite(400, 300, 800, 600, 'background');
 
-    // Create maze walls using colored rectangles
+    // Create maze walls using Graphics
     walls = this.physics.add.staticGroup();
-    createMaze(walls);
+    createMaze(this);
 
     // Create the player (bunny)
     player = this.physics.add.sprite(50, 50, 'bunny').setScale(0.2);
@@ -113,19 +113,24 @@ function update() {
     });
 }
 
-// Create a basic maze layout using colored rectangles as walls
-function createMaze(walls) {
-    // Create vertical and horizontal walls using Phaser's built-in graphics
-    let verticalWall = this.add.rectangle(400, 300, 50, 600, 0x00ff00); // Green vertical wall
-    let topWall = this.add.rectangle(400, 50, 800, 50, 0x00ff00); // Green horizontal wall at the top
-    let bottomWall = this.add.rectangle(400, 550, 800, 50, 0x00ff00); // Green horizontal wall at the bottom
+// Create a basic maze layout using Graphics instead of rectangles
+function createMaze(scene) {
+    let graphics = scene.add.graphics({ fillStyle: { color: 0x00ff00 } });
 
-    // Add physics to these walls
-    this.physics.add.existing(verticalWall, true);
-    this.physics.add.existing(topWall, true);
-    this.physics.add.existing(bottomWall, true);
+    // Vertical wall in the center
+    let verticalWall = scene.add.rectangle(400, 300, 50, 600);
+    scene.physics.add.existing(verticalWall, true);
+    graphics.fillRectShape(verticalWall);
 
-    // Add the walls to the walls group
+    // Horizontal walls at top and bottom
+    let topWall = scene.add.rectangle(400, 50, 800, 50);
+    let bottomWall = scene.add.rectangle(400, 550, 800, 50);
+    scene.physics.add.existing(topWall, true);
+    scene.physics.add.existing(bottomWall, true);
+    graphics.fillRectShape(topWall);
+    graphics.fillRectShape(bottomWall);
+
+    // Add the walls to the static group
     walls.add(verticalWall);
     walls.add(topWall);
     walls.add(bottomWall);
