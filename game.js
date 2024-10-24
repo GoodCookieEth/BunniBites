@@ -37,14 +37,15 @@ function preload() {
     this.load.image('bunny', 'assets/rabbit.png');
     this.load.image('carrot', 'assets/carrot.png');
     this.load.image('poop', 'assets/poop.png');
-    this.load.image('background', 'assets/matrix_background.jpg'); // Updated to .jpg
+    this.load.image('background', 'assets/matrix_background.jpg'); // Ensure .jpg extension
 }
 
 function create() {
     // Add the background
     background = this.add.tileSprite(400, 300, 800, 600, 'background');
 
-    // Create maze walls using Graphics
+    // Create maze walls using Graphics instead of rectangles
+    walls = this.physics.add.staticGroup();
     createMaze(this);
 
     // Create the player (bunny)
@@ -110,13 +111,20 @@ function update() {
 function createMaze(scene) {
     let graphics = scene.add.graphics({ fillStyle: { color: 0x00ff00 } });
 
-    // Create vertical and horizontal walls using graphics instead of rectangles
+    // Create vertical and horizontal walls using Graphics
     graphics.fillRect(375, 0, 50, 600);  // Vertical wall in the center
     graphics.fillRect(0, 0, 800, 50);    // Horizontal wall at the top
     graphics.fillRect(0, 550, 800, 50);  // Horizontal wall at the bottom
 
-    // Add physics bodies for the walls
-    scene.physics.add.existing(graphics, true);
+    // Add physics to the graphics (this adds physics bodies to the walls)
+    let verticalWall = scene.physics.add.existing(graphics.fillRect(375, 0, 50, 600), true);
+    let topWall = scene.physics.add.existing(graphics.fillRect(0, 0, 800, 50), true);
+    let bottomWall = scene.physics.add.existing(graphics.fillRect(0, 550, 800, 50), true);
+
+    // Add walls to static group
+    walls.add(verticalWall);
+    walls.add(topWall);
+    walls.add(bottomWall);
 }
 
 // Collecting carrots (dots)
