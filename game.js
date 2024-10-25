@@ -44,21 +44,24 @@ function preload() {
 function create() {
     console.log("Create function started");
 
-    // Add background first to avoid overlapping issues
+    // Add background first and set its depth to -1 (ensure it's behind everything)
     let background = this.add.image(400, 300, 'background');
-    background.setDepth(-1);  // Ensure background is behind everything
+    background.setDepth(-1);  // Set background to the lowest depth
 
     // Add the bunny sprite (player)
     let player = this.add.sprite(100, 100, 'bunny');
     player.setScale(0.2);
+    player.setDepth(1); // Ensure bunny is above the background
 
     // Add a carrot
     let carrot = this.add.image(200, 200, 'carrot');
     carrot.setScale(0.1);
+    carrot.setDepth(1); // Ensure carrot is above the background
 
     // Add a poop emoji
     let poop = this.add.image(300, 300, 'poop');
     poop.setScale(0.1);
+    poop.setDepth(1); // Ensure poop is above the background
 
     console.log("Assets added to the scene");
 }
