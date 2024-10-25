@@ -5,15 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Phaser Game</title>
     <style>
-        /* Ensure the canvas takes up the exact width and height */
         body {
             margin: 0;
-            background-color: #fff; /* Ensure no black background */
+            background-color: #fff; /* Make sure no default background color is added */
         }
         canvas {
-            display: block; /* Prevent scrollbars */
-            margin: 0 auto; /* Center the canvas horizontally */
+            display: block;
+            margin: 0 auto;  /* Center the canvas horizontally */
             padding: 0;
+            background-color: transparent; /* Ensure the canvas has no background color */
+            width: 800px;  /* Set exact width */
+            height: 600px; /* Set exact height */
         }
     </style>
 </head>
