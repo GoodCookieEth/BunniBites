@@ -44,9 +44,10 @@ function preload() {
 function create() {
     console.log("Create function started");
 
-    // Add background first and set its depth to -1 (ensure it's behind everything)
+    // Scale the background to fit the full canvas size (800x600)
     let background = this.add.image(400, 300, 'background');
-    background.setDepth(-1);  // Set background to the lowest depth
+    background.setDisplaySize(800, 600); // Scale background to fit the canvas
+    background.setDepth(-1);  // Ensure background is behind everything
 
     // Add the bunny sprite (player)
     let player = this.add.sprite(100, 100, 'bunny');
