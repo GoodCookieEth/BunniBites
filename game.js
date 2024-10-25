@@ -59,19 +59,14 @@ function create() {
     // Add a debug rectangle to test rendering
     let debugRect = this.add.rectangle(400, 300, 100, 100, 0xff0000);
     debugRect.setDepth(1);  // Ensure this is on top for visibility
-    debugRect.setVisible(true);  // Make sure it's visible
     console.log("Debug rectangle added to the scene");
 
-    // Create maze walls using Graphics
-    createMaze(this);
-
-    // Create player (bunny)
-    player = this.physics.add.sprite(50, 50, 'bunny').setScale(0.2);
-    player.setCollideWorldBounds(true);
+    // Create a simple circle to represent the player for testing
+    player = this.add.circle(50, 50, 15, 0x00ff00);
     player.setDepth(2);  // Ensure player is above the background
-    player.setVisible(true);  // Ensure player is visible
+    console.log("Player (circle) added to the scene at position (50, 50)");
 
-    // Create group of carrots (dots)
+    // Create carrots (just logging for now)
     carrots = this.physics.add.group({
         key: 'carrot',
         repeat: totalDots - 1,
@@ -82,8 +77,9 @@ function create() {
     carrots.children.iterate(function (carrot) {
         carrot.setVisible(true);  // Ensure all carrots are visible
     });
+    console.log("Carrots added to the scene");
 
-    // Create poop emojis (ghosts)
+    // Create poop emojis (just logging for now)
     poopEmojis = this.physics.add.group({
         key: 'poop',
         repeat: 3,
@@ -94,8 +90,9 @@ function create() {
     poopEmojis.children.iterate(function (poop) {
         poop.setVisible(true);  // Ensure all poop emojis are visible
     });
+    console.log("Poop emojis added to the scene");
 
-    // Add overlap between bunny and carrots
+    // Add overlap between player and carrots
     this.physics.add.overlap(player, carrots, collectCarrot, null, this);
 
     // Add collision between player and poop emojis (game over)
@@ -121,16 +118,17 @@ function update() {
 
     // Handle player movement
     if (cursors.left.isDown) {
-        player.setVelocityX(-160);
+        player.x -= 5;  // Simple movement update
     } else if (cursors.right.isDown) {
-        player.setVelocityX(160);
+        player.x += 5;
     } else if (cursors.up.isDown) {
-        player.setVelocityY(-160);
+        player.y -= 5;
     } else if (cursors.down.isDown) {
-        player.setVelocityY(160);
-    } else {
-        player.setVelocity(0);
+        player.y += 5;
     }
+
+    // Log player position for debugging
+    console.log(`Player position: (${player.x}, ${player.y})`);
 
     // Move poop emojis (ghosts) randomly
     poopEmojis.children.iterate(function (poop) {
