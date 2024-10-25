@@ -3,7 +3,7 @@ const config = {
     width: 800,
     height: 600,
     parent: document.body, // Attach canvas to the body directly
-    backgroundColor: 'rgba(0, 0, 0, 0)', // Ensure canvas is transparent
+    backgroundColor: 'rgba(255, 255, 255, 0)', // Transparent background
     scale: {
         mode: Phaser.Scale.NONE, // Disable automatic scaling
         autoCenter: Phaser.Scale.CENTER_BOTH // Center the game on the screen
@@ -16,20 +16,49 @@ const config = {
         }
     },
     scene: {
+        preload: preload,
         create: create
     }
 };
 
 const game = new Phaser.Game(config);
 
+function preload() {
+    console.log("Preloading assets...");
+
+    // Load assets and add logging
+    this.load.image('bunny', 'assets/rabbit.png');
+    this.load.image('background', 'assets/matrix_background.jpg');
+    this.load.image('carrot', 'assets/carrot.png');
+    this.load.image('poop', 'assets/poop.png');
+
+    this.load.on('filecomplete', function (fileKey) {
+        console.log(`File loaded: ${fileKey}`);
+    });
+    
+    this.load.on('loaderror', function (fileKey) {
+        console.error(`Error loading file: ${fileKey}`);
+    });
+}
+
 function create() {
-    // Log to confirm the create function is being called
     console.log("Create function started");
 
-    // Add a simple shape (rectangle) to verify rendering
-    let debugRect = this.add.rectangle(400, 300, 150, 100, 0xff0000); // Red rectangle
-    debugRect.setDepth(1);  // Ensure this is rendered on top of everything
+    // Add background first to avoid overlapping issues
+    let background = this.add.image(400, 300, 'background');
+    background.setDepth(-1);  // Ensure background is behind everything
 
-    // Log to confirm that the rectangle was added
-    console.log("Debug rectangle added at (400, 300)");
+    // Add the bunny sprite (player)
+    let player = this.add.sprite(100, 100, 'bunny');
+    player.setScale(0.2);
+
+    // Add a carrot
+    let carrot = this.add.image(200, 200, 'carrot');
+    carrot.setScale(0.1);
+
+    // Add a poop emoji
+    let poop = this.add.image(300, 300, 'poop');
+    poop.setScale(0.1);
+
+    console.log("Assets added to the scene");
 }
