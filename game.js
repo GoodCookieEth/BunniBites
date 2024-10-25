@@ -56,9 +56,10 @@ function create() {
     background = this.add.tileSprite(400, 300, 800, 600, 'background');
     background.setDepth(-1);  // Ensure background is behind other objects
 
-    // Create simple debug rectangle to check if rendering works
+    // Add a debug rectangle to test rendering
     let debugRect = this.add.rectangle(400, 300, 100, 100, 0xff0000);
     debugRect.setDepth(1);  // Ensure this is on top for visibility
+    debugRect.setVisible(true);  // Make sure it's visible
     console.log("Debug rectangle added to the scene");
 
     // Create maze walls using Graphics
@@ -68,6 +69,7 @@ function create() {
     player = this.physics.add.sprite(50, 50, 'bunny').setScale(0.2);
     player.setCollideWorldBounds(true);
     player.setDepth(2);  // Ensure player is above the background
+    player.setVisible(true);  // Ensure player is visible
 
     // Create group of carrots (dots)
     carrots = this.physics.add.group({
@@ -77,6 +79,9 @@ function create() {
         setScale: { x: 0.05, y: 0.05 }
     });
     carrots.setDepth(2);  // Ensure carrots are above the background
+    carrots.children.iterate(function (carrot) {
+        carrot.setVisible(true);  // Ensure all carrots are visible
+    });
 
     // Create poop emojis (ghosts)
     poopEmojis = this.physics.add.group({
@@ -86,6 +91,9 @@ function create() {
         setScale: { x: 0.1, y: 0.1 }
     });
     poopEmojis.setDepth(2);  // Ensure poop emojis are above the background
+    poopEmojis.children.iterate(function (poop) {
+        poop.setVisible(true);  // Ensure all poop emojis are visible
+    });
 
     // Add overlap between bunny and carrots
     this.physics.add.overlap(player, carrots, collectCarrot, null, this);
