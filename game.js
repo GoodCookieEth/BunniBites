@@ -2,6 +2,12 @@ const config = {
     type: Phaser.AUTO,
     width: 800,
     height: 600,
+    parent: document.body, // Attach canvas to the body directly
+    backgroundColor: 'rgba(0, 0, 0, 0)', // Ensure canvas is transparent
+    scale: {
+        mode: Phaser.Scale.NONE, // Disable automatic scaling
+        autoCenter: Phaser.Scale.CENTER_BOTH // Center the game on the screen
+    },
     physics: {
         default: 'arcade',
         arcade: {
