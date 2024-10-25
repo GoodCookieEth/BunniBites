@@ -20,7 +20,7 @@ const config = {
         default: 'arcade',
         arcade: {
             gravity: { y: 0 },
-            debug: false
+            debug: true  // Enable debug mode for easier troubleshooting
         }
     },
     scene: {
@@ -33,18 +33,33 @@ const config = {
 const game = new Phaser.Game(config);
 
 function preload() {
+    // Log to check that preload is running
+    console.log("Preload started");
+
+    // Load images for bunny, carrots, poop emojis, and background
     this.load.image('bunny', 'assets/rabbit.png');
     this.load.image('carrot', 'assets/carrot.png');
     this.load.image('poop', 'assets/poop.png');
-    this.load.image('background', 'assets/matrix_background.jpg');
+    this.load.image('background', 'assets/matrix_background.jpg'); 
+
+    // Error handling for asset loading
+    this.load.on('filecomplete', function (fileKey) {
+        console.log('File loaded:', fileKey);
+    });
+    this.load.on('loaderror', function (fileKey) {
+        console.error('Error loading file:', fileKey);
+    });
 }
 
 function create() {
-    // Add background
-    background = this.add.tileSprite(400, 300, 800, 600, 'background');
+    // Log to check if create is running
+    console.log("Create function started");
 
-    // Create maze walls using staticGroup
-    walls = this.physics.add.staticGroup();
+    // Add the background
+    background = this.add.tileSprite(400, 300, 800, 600, 'background');
+    background.setDepth(-1);  // Ensure the background is behind all other elements
+
+    // Create maze walls using Graphics
     createMaze(this);
 
     // Create player (bunny)
@@ -81,6 +96,9 @@ function create() {
 
     // Score display
     scoreText = this.add.text(16, 16, 'Dots Collected: 0/' + totalDots, { fontSize: '32px', fill: '#FFF' });
+
+    // Debug log for successful creation
+    console.log("Create function completed");
 }
 
 function update() {
@@ -109,13 +127,32 @@ function update() {
     });
 }
 
-// Create a basic maze layout using static bodies
+// Create a basic maze layout using Graphics
 function createMaze(scene) {
-    // Create vertical and horizontal walls
-    walls.create(400, 0, 'bunny').setDisplaySize(50, 600).refreshBody();  // Vertical wall
-    walls.create(400, 600, 'bunny').setDisplaySize(50, 600).refreshBody(); // Vertical wall
-    walls.create(0, 25, 'bunny').setDisplaySize(800, 50).refreshBody();    // Horizontal top
-    walls.create(0, 575, 'bunny').setDisplaySize(800, 50).refreshBody();   // Horizontal bottom
+    // Log maze creation process
+    console.log("Creating maze walls");
+
+    let graphics = scene.add.graphics({ fillStyle: { color: 0x00ff00 } });
+
+    // Draw the maze walls
+    graphics.fillRect(375, 0, 50, 600);  // Vertical wall in the center
+    graphics.fillRect(0, 0, 800, 50);    // Horizontal wall at the top
+    graphics.fillRect(0, 550, 800, 50);  // Horizontal wall at the bottom
+
+    // Convert graphics to static bodies for physics
+    walls = scene.physics.add.staticGroup();
+    
+    let verticalWall = scene.physics.add.staticImage(400, 300).setSize(50, 600).setVisible(false);
+    let topWall = scene.physics.add.staticImage(400, 25).setSize(800, 50).setVisible(false);
+    let bottomWall = scene.physics.add.staticImage(400, 575).setSize(800, 50).setVisible(false);
+
+    // Add these walls to the physics group
+    walls.add(verticalWall);
+    walls.add(topWall);
+    walls.add(bottomWall);
+
+    // Debug log for maze completion
+    console.log("Maze walls created and physics bodies added");
 }
 
 // Collecting carrots (dots)
