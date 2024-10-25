@@ -33,10 +33,8 @@ const config = {
 const game = new Phaser.Game(config);
 
 function preload() {
-    // Log to check that preload is running
     console.log("Preload started");
-
-    // Load images for bunny, carrots, poop emojis, and background
+    // Load images
     this.load.image('bunny', 'assets/rabbit.png');
     this.load.image('carrot', 'assets/carrot.png');
     this.load.image('poop', 'assets/poop.png');
@@ -52,12 +50,16 @@ function preload() {
 }
 
 function create() {
-    // Log to check if create is running
     console.log("Create function started");
 
-    // Add the background
+    // Add the background and ensure it is behind everything
     background = this.add.tileSprite(400, 300, 800, 600, 'background');
-    background.setDepth(-1);  // Ensure the background is behind all other elements
+    background.setDepth(-1);  // Ensure background is behind other objects
+
+    // Create simple debug rectangle to check if rendering works
+    let debugRect = this.add.rectangle(400, 300, 100, 100, 0xff0000);
+    debugRect.setDepth(1);  // Ensure this is on top for visibility
+    console.log("Debug rectangle added to the scene");
 
     // Create maze walls using Graphics
     createMaze(this);
@@ -65,6 +67,7 @@ function create() {
     // Create player (bunny)
     player = this.physics.add.sprite(50, 50, 'bunny').setScale(0.2);
     player.setCollideWorldBounds(true);
+    player.setDepth(2);  // Ensure player is above the background
 
     // Create group of carrots (dots)
     carrots = this.physics.add.group({
@@ -73,6 +76,7 @@ function create() {
         setXY: { x: 100, y: 100, stepX: 70, stepY: 50 },
         setScale: { x: 0.05, y: 0.05 }
     });
+    carrots.setDepth(2);  // Ensure carrots are above the background
 
     // Create poop emojis (ghosts)
     poopEmojis = this.physics.add.group({
@@ -81,6 +85,7 @@ function create() {
         setXY: { x: Phaser.Math.Between(200, 600), y: Phaser.Math.Between(100, 500), stepX: 100 },
         setScale: { x: 0.1, y: 0.1 }
     });
+    poopEmojis.setDepth(2);  // Ensure poop emojis are above the background
 
     // Add overlap between bunny and carrots
     this.physics.add.overlap(player, carrots, collectCarrot, null, this);
@@ -96,8 +101,8 @@ function create() {
 
     // Score display
     scoreText = this.add.text(16, 16, 'Dots Collected: 0/' + totalDots, { fontSize: '32px', fill: '#FFF' });
+    scoreText.setDepth(2);  // Ensure score is above the background
 
-    // Debug log for successful creation
     console.log("Create function completed");
 }
 
@@ -129,12 +134,9 @@ function update() {
 
 // Create a basic maze layout using Graphics
 function createMaze(scene) {
-    // Log maze creation process
     console.log("Creating maze walls");
 
     let graphics = scene.add.graphics({ fillStyle: { color: 0x00ff00 } });
-
-    // Draw the maze walls
     graphics.fillRect(375, 0, 50, 600);  // Vertical wall in the center
     graphics.fillRect(0, 0, 800, 50);    // Horizontal wall at the top
     graphics.fillRect(0, 550, 800, 50);  // Horizontal wall at the bottom
@@ -146,12 +148,10 @@ function createMaze(scene) {
     let topWall = scene.physics.add.staticImage(400, 25).setSize(800, 50).setVisible(false);
     let bottomWall = scene.physics.add.staticImage(400, 575).setSize(800, 50).setVisible(false);
 
-    // Add these walls to the physics group
     walls.add(verticalWall);
     walls.add(topWall);
     walls.add(bottomWall);
 
-    // Debug log for maze completion
     console.log("Maze walls created and physics bodies added");
 }
 
